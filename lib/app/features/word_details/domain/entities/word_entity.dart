@@ -108,6 +108,16 @@ class Meanings {
     this.definitions,
   });
 
+  // Meanings.fromJson(Map<String, dynamic> json) {
+  //   partOfSpeech = json['partOfSpeech'];
+  //   if (json['definitions'] != null) {
+  //     definitions = <Definitions>[];
+  //     json['definitions'].forEach((v) {
+  //       definitions!.add(Definitions.fromJson(v));
+  //     });
+  //   }
+  // }
+
   Meanings.fromJson(Map<String, dynamic> json) {
     partOfSpeech = json['partOfSpeech'];
     if (json['definitions'] != null) {

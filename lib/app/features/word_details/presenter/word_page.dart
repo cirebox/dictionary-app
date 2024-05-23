@@ -4,7 +4,6 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import '../../../core/domain/errors/exceptions.dart';
 import '../../../core/external/datasource/localstorage_impl.dart';
-import 'widgets/button.widget.dart';
 import 'widgets/card_phonetic.widget.dart';
 import 'widgets/meanings.widget.dart';
 import 'word_store.dart';
@@ -51,7 +50,7 @@ class _WordPageState extends State<WordPage> {
       child: Scaffold(
         appBar: AppBar(
           elevation: 0.8,
-          toolbarHeight: 40,
+          toolbarHeight: 50,
           leading: IconButton(
             icon: const Icon(Icons.close, color: Colors.white),
             onPressed: () => Modular.to.pop(),
@@ -82,7 +81,7 @@ class _WordPageState extends State<WordPage> {
               return Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(8),
                     child: CardPhonetic(
                       word: word.word,
                       phoneticsText: word.phonetics?.last.text ?? '',
@@ -90,41 +89,29 @@ class _WordPageState extends State<WordPage> {
                   ),
                   //Sound entra aqui
 
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Text(
-                            'Meanings',
-                            style: Theme.of(context).textTheme.headline6,
-                            textAlign: TextAlign.start,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 50,
-                          child: MeaningsWidget(),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: SizedBox(
-                            height: 50,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ButtonNavigation(text: 'Voltar', onTap: () {}),
-                                ButtonNavigation(text: 'Próximo', onTap: () {}),
-                              ],
-                            ),
+                  word.meanings?.length == 0
+                      ? const Center(
+                          child: Text('Nenhuma definição encontrada'),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                child: Text(
+                                  'Meanings',
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                  textAlign: TextAlign.start,
+                                ),
+                              ),
+                              MeaningsWidget(meanings: word.meanings),
+                            ],
                           ),
                         )
-                      ],
-                    ),
-                  )
                 ],
               );
             },

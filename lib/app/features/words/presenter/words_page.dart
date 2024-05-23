@@ -70,6 +70,15 @@ class _WordsPageState extends State<WordsPage> with TickerProviderStateMixin {
           elevation: 0.8,
           toolbarHeight: 40,
           title: const Text('Words Dictionary'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                loadFavorites();
+              },
+            ),
+          ],
+          automaticallyImplyLeading: false,
           bottom: TabBar(
             controller: _tabController,
             tabs: const <Widget>[
@@ -107,23 +116,18 @@ class _WordsPageState extends State<WordsPage> with TickerProviderStateMixin {
       child: GridView.builder(
         itemCount: words.length,
         itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.all(1.5),
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black, width: 0.6),
-              ),
-              child: CardWord(
-                word: words[index],
-                onTap: () {
-                  setState(() {
-                    wordsHistory.add(
-                        '${words[index]} => ${inputFormat.format(DateTime.now())}');
-                  });
-                  Modular.to.pushNamed('/word_details/${words[index]}');
+          return CardWord(
+            word: words[index],
+            onTap: () {
+              Modular.to.pushNamed('/word_details/${words[index]}');
+              setState(
+                () {
+                  wordsHistory.add(
+                    '${words[index]} => ${inputFormat.format(DateTime.now())}',
+                  );
                 },
-              ),
-            ),
+              );
+            },
           );
         },
         gridDelegate:
@@ -148,7 +152,7 @@ class _WordsPageState extends State<WordsPage> with TickerProviderStateMixin {
               padding: const EdgeInsets.all(1.5),
               child: Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black, width: 0.6),
+                  border: Border.all(color: Colors.blue, width: 0.6),
                 ),
                 child: ListTile(
                   title: Text(wordsHistory[index]),
@@ -163,6 +167,7 @@ class _WordsPageState extends State<WordsPage> with TickerProviderStateMixin {
 
   Widget _favorites() {
     final inputFormat = DateFormat('dd/MM/yyyy hh:mm');
+
     return RefreshIndicator(
       onRefresh: () async {
         setState(() {});
@@ -173,28 +178,22 @@ class _WordsPageState extends State<WordsPage> with TickerProviderStateMixin {
         child: GridView.builder(
           itemCount: wordsFavorites.length,
           itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.all(1.5),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black, width: 0.6),
-                ),
-                child: CardWord(
-                  word: wordsFavorites[index],
-                  onTap: () {
-                    setState(() {
-                      wordsHistory.add(
-                          '${wordsFavorites[index]} => ${inputFormat.format(DateTime.now())}');
-                    });
-                    Modular.to
-                        .pushNamed('/word_details/${wordsFavorites[index]}');
+            return CardWord(
+              word: wordsFavorites[index],
+              onTap: () {
+                Modular.to.pushNamed('/word_details/${wordsFavorites[index]}');
+                setState(
+                  () {
+                    wordsHistory.add(
+                        '${wordsFavorites[index]} => ${inputFormat.format(DateTime.now())}');
                   },
-                ),
-              ),
+                );
+              },
             );
           },
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3),
+            crossAxisCount: 3,
+          ),
         ),
       ),
     );

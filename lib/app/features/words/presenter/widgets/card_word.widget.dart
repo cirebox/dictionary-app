@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class CardWord extends StatelessWidget {
   final String word;
@@ -7,10 +7,20 @@ class CardWord extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Center(
-        child: Text(word),
+    return Padding(
+      padding: const EdgeInsets.all(1),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Card(
+          child: Center(
+            child: Text(
+              word,
+              style: const TextStyle(
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

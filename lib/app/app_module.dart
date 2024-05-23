@@ -18,14 +18,14 @@ class AppModule extends Module {
   List<ModularRoute> get routes => [
         ModuleRoute(
           Modular.initialRoute,
-          duration: const Duration(milliseconds: 500),
-          transition: TransitionType.noTransition,
+          duration: const Duration(milliseconds: 600),
+          transition: TransitionType.rightToLeft,
           module: WordsModule(),
         ),
         ModuleRoute(
           '/word_details',
-          duration: const Duration(milliseconds: 500),
-          transition: TransitionType.noTransition,
+          duration: const Duration(milliseconds: 600),
+          transition: TransitionType.rightToLeftWithFade,
           module: WordModule(),
         ),
       ];

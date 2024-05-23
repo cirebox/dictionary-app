@@ -3,3 +3,4 @@ linter:
   rules:
     library_private_types_in_public_api: false
     constant_identifier_names: false
+    prefer_is_empty: false

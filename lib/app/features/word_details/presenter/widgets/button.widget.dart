@@ -10,7 +10,7 @@ class ButtonNavigation extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        constraints: const BoxConstraints(minWidth: 100),
+        constraints: const BoxConstraints(minWidth: 140),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.black, width: 0.6),
         ),
