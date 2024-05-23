@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import '../../../core/domain/errors/exceptions.dart';
+import '../../../core/external/datasource/localstorage_impl.dart';
+import 'widgets/button.widget.dart';
 import 'widgets/card_phonetic.widget.dart';
+import 'widgets/meanings.widget.dart';
 import 'word_store.dart';
 
 class WordPage extends StatefulWidget {
@@ -16,10 +19,14 @@ class WordPage extends StatefulWidget {
 
 class _WordPageState extends State<WordPage> {
   var store = Modular.get<WordStore>();
+  var storage = Modular.get<LocalStorageDatasourceImpl>();
 
+  bool isFavorite = false;
+  String favorites = '';
   @override
   void initState() {
     store.getWord(widget.word!);
+    loadFavorites();
     super.initState();
   }
 
@@ -29,39 +36,106 @@ class _WordPageState extends State<WordPage> {
     super.dispose();
   }
 
+  void loadFavorites() async {
+    favorites = await storage.load('favorites');
+    if (favorites.contains(widget.word!)) {
+      setState(() {
+        isFavorite = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.white),
-          onPressed: () => Modular.to.pop(),
-        ),
-        automaticallyImplyLeading: false,
-      ),
-      body: SingleChildScrollView(
-        child: ScopedBuilder<WordStore, Failure, WordEntity>(
-          store: store,
-          onState: (_, word) {
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: CardPhonetic(
-                    word: word.word,
-                    phoneticsText: word.phonetics?.last.text,
-                  ),
-                ),
-              ],
-            );
-          },
-          onLoading: (context) => const Center(
-            child: CircularProgressIndicator(),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 0.8,
+          toolbarHeight: 40,
+          leading: IconButton(
+            icon: const Icon(Icons.close, color: Colors.white),
+            onPressed: () => Modular.to.pop(),
           ),
-          onError: (context, error) => const Center(
-            child: Text(
-              'Failed to list words',
-              style: TextStyle(color: Colors.red),
+          actions: [
+            IconButton(
+              icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: Colors.white),
+              onPressed: () {
+                if (isFavorite) {
+                  favorites = favorites.replaceAll(widget.word!, '');
+                } else {
+                  favorites += widget.word!;
+                }
+                storage.save('favorites', favorites);
+                setState(() {
+                  isFavorite = !isFavorite;
+                });
+              },
+            ),
+          ],
+          automaticallyImplyLeading: false,
+        ),
+        body: SingleChildScrollView(
+          child: ScopedBuilder<WordStore, Failure, WordEntity>(
+            store: store,
+            onState: (_, word) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: CardPhonetic(
+                      word: word.word,
+                      phoneticsText: word.phonetics?.last.text ?? '',
+                    ),
+                  ),
+                  //Sound entra aqui
+
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Text(
+                            'Meanings',
+                            style: Theme.of(context).textTheme.headline6,
+                            textAlign: TextAlign.start,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 50,
+                          child: MeaningsWidget(),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: SizedBox(
+                            height: 50,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ButtonNavigation(text: 'Voltar', onTap: () {}),
+                                ButtonNavigation(text: 'Próximo', onTap: () {}),
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              );
+            },
+            onLoading: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ),
+            onError: (context, error) => const Center(
+              child: Text(
+                'Failed to list words',
+                style: TextStyle(color: Colors.red),
+              ),
             ),
           ),
         ),

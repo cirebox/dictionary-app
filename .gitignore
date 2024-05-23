@@ -20,7 +20,6 @@ migrate_working_dir/
 .vscode/
 linux/
 macos/
-web/
 windows/
 
 # The .vscode folder contains launch configuration and tasks you configure in
