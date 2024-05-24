@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
-import 'package:intl/intl.dart';
-
-import '../../../core/external/datasource/localstorage_impl.dart';
-import 'widgets/card_word.widget.dart';
+import 'widgets/favorites_page.widget.dart';
+import 'widgets/history_page.widget.dart';
+import 'widgets/words_page.widget.dart';
 
 class WordsPage extends StatefulWidget {
   const WordsPage({
@@ -16,12 +14,10 @@ class WordsPage extends StatefulWidget {
 
 class _WordsPageState extends State<WordsPage> with TickerProviderStateMixin {
   late final TabController _tabController;
-  var storage = Modular.get<LocalStorageDatasourceImpl>();
 
   @override
   void initState() {
     super.initState();
-    loadFavorites();
     _tabController = TabController(length: 3, vsync: this);
   }
 
@@ -29,37 +25,6 @@ class _WordsPageState extends State<WordsPage> with TickerProviderStateMixin {
   void dispose() {
     _tabController.dispose();
     super.dispose();
-  }
-
-  late final List<String> words = [
-    'hello',
-    'world',
-    'beautiful',
-    'bye',
-    'red',
-    'blue',
-    'green',
-    'yellow',
-    'black',
-    'goodbye',
-    'goodnight',
-    'goodmorning',
-    'goodafternoon',
-    'goodnight',
-    'goodday',
-  ];
-
-  String favorites = '';
-  List<String> wordsFavorites = [];
-  List<String> wordsHistory = [];
-
-  void loadFavorites() async {
-    wordsFavorites = [];
-    favorites = await storage.load('favorites');
-    wordsFavorites = words.map((e) => favorites.contains(e) ? e : '').toList();
-    setState(() {
-      wordsFavorites.removeWhere((element) => element.isEmpty);
-    });
   }
 
   @override
@@ -70,14 +35,6 @@ class _WordsPageState extends State<WordsPage> with TickerProviderStateMixin {
           elevation: 0.8,
           toolbarHeight: 40,
           title: const Text('Words Dictionary'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: () {
-                loadFavorites();
-              },
-            ),
-          ],
           automaticallyImplyLeading: false,
           bottom: TabBar(
             controller: _tabController,
@@ -99,101 +56,11 @@ class _WordsPageState extends State<WordsPage> with TickerProviderStateMixin {
         ),
         body: TabBarView(
           controller: _tabController,
-          children: <Widget>[
-            _wordsList(),
-            _history(),
-            _favorites(),
+          children: const [
+            WordsPageWidget(),
+            HistoryPage(),
+            FavoritesPage(),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _wordsList() {
-    final inputFormat = DateFormat('dd/MM/yyyy hh:mm');
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: GridView.builder(
-        itemCount: words.length,
-        itemBuilder: (context, index) {
-          return CardWord(
-            word: words[index],
-            onTap: () {
-              Modular.to.pushNamed('/word_details/${words[index]}');
-              setState(
-                () {
-                  wordsHistory.add(
-                    '${words[index]} => ${inputFormat.format(DateTime.now())}',
-                  );
-                },
-              );
-            },
-          );
-        },
-        gridDelegate:
-            const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-      ),
-    );
-  }
-
-  Widget _history() {
-    return RefreshIndicator(
-      onRefresh: () async {
-        setState(() {});
-        return Future.value();
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.separated(
-          itemCount: wordsHistory.length,
-          separatorBuilder: (context, index) => const Divider(),
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.all(1.5),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue, width: 0.6),
-                ),
-                child: ListTile(
-                  title: Text(wordsHistory[index]),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _favorites() {
-    final inputFormat = DateFormat('dd/MM/yyyy hh:mm');
-
-    return RefreshIndicator(
-      onRefresh: () async {
-        setState(() {});
-        return Future.value();
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          itemCount: wordsFavorites.length,
-          itemBuilder: (context, index) {
-            return CardWord(
-              word: wordsFavorites[index],
-              onTap: () {
-                Modular.to.pushNamed('/word_details/${wordsFavorites[index]}');
-                setState(
-                  () {
-                    wordsHistory.add(
-                        '${wordsFavorites[index]} => ${inputFormat.format(DateTime.now())}');
-                  },
-                );
-              },
-            );
-          },
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-          ),
         ),
       ),
     );

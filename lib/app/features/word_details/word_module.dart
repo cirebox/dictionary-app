@@ -1,7 +1,7 @@
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../core/infra/services/api/api_service.dart';
-import 'domain/usecases/get_words.dart';
+import 'domain/usecases/get_word.dart';
 import 'external/datasource/word_datasource_impl.dart';
 import 'infra/repositories/words_repository_impl.dart';
 import 'presenter/word_page.dart';

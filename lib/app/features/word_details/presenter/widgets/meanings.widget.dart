@@ -43,7 +43,7 @@ class _MeaningsWidgetState extends State<MeaningsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.meanings?.length == 0
+    return widget.meanings == null
         ? const Center(
             child: Text('Nenhuma definição encontrada'),
           )
@@ -71,7 +71,7 @@ class _MeaningsWidgetState extends State<MeaningsWidget> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 8),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: e.definitions!.map((e) {
@@ -84,7 +84,7 @@ class _MeaningsWidgetState extends State<MeaningsWidget> {
                                       fontSize: 14,
                                     ),
                                   ),
-                                  const SizedBox(height: 5),
+                                  const SizedBox(height: 3),
                                   e.example != null
                                       ? Text(
                                           e.example!,
@@ -94,7 +94,7 @@ class _MeaningsWidgetState extends State<MeaningsWidget> {
                                           ),
                                         )
                                       : const SizedBox(),
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 3),
                                 ],
                               );
                             }).toList(),

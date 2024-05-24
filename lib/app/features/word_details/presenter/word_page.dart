@@ -1,16 +1,20 @@
+import 'package:audioplayers/audioplayers.dart';
+import 'package:dictionary/app/core/util/words_history.dart';
 import 'package:dictionary/app/features/word_details/domain/entities/word_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:intl/intl.dart';
 import '../../../core/domain/errors/exceptions.dart';
 import '../../../core/external/datasource/localstorage_impl.dart';
+import 'widgets/audio_play.widget.dart';
 import 'widgets/card_phonetic.widget.dart';
 import 'widgets/meanings.widget.dart';
 import 'word_store.dart';
 
 class WordPage extends StatefulWidget {
   final String? word;
-  const WordPage({Key? key, this.word}) : super(key: key);
+  const WordPage({super.key, this.word});
 
   @override
   _WordPageState createState() => _WordPageState();
@@ -20,18 +24,29 @@ class _WordPageState extends State<WordPage> {
   var store = Modular.get<WordStore>();
   var storage = Modular.get<LocalStorageDatasourceImpl>();
 
+  late AudioPlayer player = AudioPlayer();
+
   bool isFavorite = false;
   String favorites = '';
   @override
   void initState() {
+    super.initState();
     store.getWord(widget.word!);
     loadFavorites();
-    super.initState();
+
+    player = AudioPlayer();
+
+    // Set the release mode to keep the source after playback has completed.
+    player.setReleaseMode(ReleaseMode.stop);
+
+    final inputFormat = DateFormat('dd/MM/yyyy hh:mm');
+    wordsHistory.add('${widget.word} => ${inputFormat.format(DateTime.now())}');
   }
 
   @override
   void dispose() {
     Modular.dispose<WordStore>();
+    player.dispose();
     super.dispose();
   }
 
@@ -87,8 +102,15 @@ class _WordPageState extends State<WordPage> {
                       phoneticsText: word.phonetics?.last.text ?? '',
                     ),
                   ),
-                  //Sound entra aqui
-
+                  word.audioURL != null
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          child: PlayerWidget(
+                            player: player,
+                            audioUrl: word.audioURL!,
+                          ),
+                        )
+                      : const SizedBox(),
                   word.meanings?.length == 0
                       ? const Center(
                           child: Text('Nenhuma definição encontrada'),

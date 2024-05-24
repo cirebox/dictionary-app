@@ -1,6 +1,7 @@
 class WordEntity {
   String? word;
   String? phonetic;
+  String? audioURL;
   List<Phonetics>? phonetics;
   List<Meanings>? meanings;
   License? license;
@@ -9,6 +10,7 @@ class WordEntity {
   WordEntity(
       {this.word,
       this.phonetic,
+      this.audioURL,
       this.phonetics,
       this.meanings,
       this.license,
@@ -17,9 +19,13 @@ class WordEntity {
   WordEntity.fromJson(Map<String, dynamic> json) {
     word = json['word'];
     phonetic = json['phonetic'];
+
     if (json['phonetics'] != null) {
       phonetics = <Phonetics>[];
       json['phonetics'].forEach((v) {
+        if (v['audio'] != '') {
+          audioURL = v['audio'];
+        }
         phonetics!.add(Phonetics.fromJson(v));
       });
     }

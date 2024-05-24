@@ -2,7 +2,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import '../../../core/domain/errors/exceptions.dart';
 import '../../../core/either_adapter/dartz_either_adapter.dart';
 import '../domain/entities/word_entity.dart';
-import '../domain/usecases/get_words.dart';
+import '../domain/usecases/get_word.dart';
 
 class WordStore extends NotifierStore<Failure, WordEntity> {
   final IGetWordUsecase _getWord;
