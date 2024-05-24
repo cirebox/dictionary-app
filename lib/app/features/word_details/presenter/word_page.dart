@@ -1,10 +1,8 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:dictionary/app/core/util/words_history.dart';
 import 'package:dictionary/app/features/word_details/domain/entities/word_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:intl/intl.dart';
 import '../../../core/domain/errors/exceptions.dart';
 import '../../../core/external/datasource/localstorage_impl.dart';
 import 'widgets/audio_play.widget.dart';
@@ -28,6 +26,8 @@ class _WordPageState extends State<WordPage> {
 
   bool isFavorite = false;
   String favorites = '';
+  String historys = '';
+
   @override
   void initState() {
     super.initState();
@@ -39,8 +39,7 @@ class _WordPageState extends State<WordPage> {
     // Set the release mode to keep the source after playback has completed.
     player.setReleaseMode(ReleaseMode.stop);
 
-    final inputFormat = DateFormat('dd/MM/yyyy hh:mm');
-    wordsHistory.add('${widget.word} => ${inputFormat.format(DateTime.now())}');
+    loadHistory();
   }
 
   @override
@@ -48,6 +47,14 @@ class _WordPageState extends State<WordPage> {
     Modular.dispose<WordStore>();
     player.dispose();
     super.dispose();
+  }
+
+  void loadHistory() async {
+    historys = await storage.load('history');
+    if (!historys.contains(widget.word!)) {
+      historys += widget.word!;
+      storage.save('history', historys);
+    }
   }
 
   void loadFavorites() async {

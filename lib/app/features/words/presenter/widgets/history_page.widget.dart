@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../../../core/util/words_history.dart';
+import '../../../../core/constants/words.constant.dart';
+import '../../../../core/external/datasource/localstorage_impl.dart';
+import 'card_word.widget.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -10,6 +13,26 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
+  var storage = Modular.get<LocalStorageDatasourceImpl>();
+
+  List<String> wordsHistory = [];
+
+  String history = '';
+  void loadHistory() async {
+    wordsHistory = [];
+    history = await storage.load('history');
+    wordsHistory = words.map((e) => history.contains(e) ? e : '').toList();
+    setState(() {
+      wordsHistory.removeWhere((element) => element.isEmpty);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadHistory();
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
@@ -19,22 +42,19 @@ class _HistoryPageState extends State<HistoryPage> {
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ListView.separated(
+        child: GridView.builder(
           itemCount: wordsHistory.length,
-          separatorBuilder: (context, index) => const Divider(),
           itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.all(1.5),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue, width: 0.6),
-                ),
-                child: ListTile(
-                  title: Text(wordsHistory[index]),
-                ),
-              ),
+            return CardWord(
+              word: wordsHistory[index],
+              onTap: () {
+                Modular.to.pushNamed('/word_details/${wordsHistory[index]}');
+              },
             );
           },
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+          ),
         ),
       ),
     );
